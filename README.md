@@ -11,9 +11,22 @@ For instance with `shell.nix`:
   pkgs ? import <nixpkgs> { overlays = [ nixpkgs-ruby ]; },
 }:
 
+let
+  ruby_package = pkgs.parseRubyVersionFile {};
+in
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
-    ruby_3_1_2
+    pkgs.${ruby_package}
   ];
+  shellHook = ''
+    # install gems locally
+    mkdir -p .local/nix-gems
+    export GEM_HOME=$PWD/.local/nix-gems
+    export GEM_PATH=$GEM_HOME
+    export PATH=$GEM_HOME/bin:$PATH
+
+    # add local bin directory to path (useful for rails)
+    export PATH=$PWD/bin:$PATH
+  '';
 }
 ```
