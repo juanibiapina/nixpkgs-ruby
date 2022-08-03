@@ -9,7 +9,7 @@ let
 
   parseRubyVersionFile = import ./parse-ruby-version-file.nix;
 in {
-  parseRubyVersionFile = parseRubyVersionFile;
+  inherit parseRubyVersionFile;
 
   ruby_2_7_6 = rubyGenericBuilder {
     version = rubyVersion "2" "7" "6" "";
