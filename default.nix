@@ -8,11 +8,6 @@ let
   rubyVersion = import ./ruby-version.nix { inherit (super) lib; };
 
   parseRubyVersionFile = import ./parse-ruby-version-file.nix;
-
-  pwd = builtins.getEnv "PWD";
-  ruby_version_string = builtins.readFile (pwd + "/.ruby-version");
-  ruby_version_parts = builtins.match "([0-9]*)\.([0-9]*)\.([0-9]*).*" ruby_version_string;
-  ruby_package = builtins.concatStringsSep "_" (["ruby"] ++ ruby_version_parts);
 in {
   parseRubyVersionFile = parseRubyVersionFile;
 
