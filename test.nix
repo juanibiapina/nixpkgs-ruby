@@ -1,6 +1,6 @@
 {
   nixpkgs-ruby ? import ./default.nix,
-  pkgs ? import <nixpkgs> { overlays = [ nixpkgs-ruby ]; },
+  pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/d220d88533e95eb7aa31fdc0f4cf216e5dbc5221.tar.gz") { overlays = [ nixpkgs-ruby ]; },
 }:
 
 {
