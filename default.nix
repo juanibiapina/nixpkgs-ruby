@@ -19,6 +19,12 @@ in {
     railsExpressPatches = patchsets version.majMinTiny;
   };
 
+  ruby_3_0_2 = super.mkRuby rec {
+    version = super.mkRubyVersion "3" "0" "2" "";
+    sha256 = "1wg6yyzc6arzikcy48igqbxfcdc79bmfpiyfi9m9j1lzmphdx1ah";
+    railsExpressPatches = patchsets version.majMinTiny;
+  };
+
   ruby_3_0_3 = super.mkRuby rec {
     version = super.mkRubyVersion "3" "0" "3" "";
     sha256 = "1b4j39zyyvdkf1ax2c6qfa40b4mxfkr87zghhw19fmnzn8f8d1im";
