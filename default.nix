@@ -1,7 +1,7 @@
 self: super:
 
 let
-  parseRubyVersionFile = import ./parse-ruby-version-file.nix;
+  parseRubyVersionFile = import ./lib/parse-ruby-version-file.nix;
 in {
   inherit parseRubyVersionFile;
 
