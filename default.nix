@@ -2,7 +2,7 @@ self: super:
 
 let
   parseRubyVersionFile = import ./lib/parseRubyVersionFile.nix;
-  mkRubyVersion = import ./lib/mk-ruby-version.nix { lib = super.lib; };
+  mkRubyVersion = import ./lib/mkRubyVersion.nix { lib = super.lib; };
   mkRuby = super.callPackage ./lib/mkRuby.nix {
     inherit (super.darwin) libobjc libunwind;
     inherit (super.darwin.apple_sdk.frameworks) Foundation;
