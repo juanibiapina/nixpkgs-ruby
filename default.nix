@@ -1,7 +1,7 @@
 self: super:
 
 let
-  parseRubyVersionFile = import ./lib/parse-ruby-version-file.nix;
+  parseRubyVersionFile = import ./lib/parseRubyVersionFile.nix;
   mkRubyVersion = import ./lib/mk-ruby-version.nix { lib = super.lib; };
   mkRuby = super.callPackage ./lib/mkRuby.nix {
     inherit (super.darwin) libobjc libunwind;
