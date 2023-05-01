@@ -15,9 +15,6 @@ let
   config = import ./config.nix { inherit fetchFromSavannah; };
   rubygems = import ./rubygems { inherit stdenv lib fetchurl; };
 
-  # Contains the ruby version heuristics
-  rubyVersion = import ./ruby-version.nix { inherit lib; };
-
   generic = { version, sha256, cargoSha256 ? null }: let
     ver = version;
     atLeast30 = lib.versionAtLeast ver.majMin "3.0";
