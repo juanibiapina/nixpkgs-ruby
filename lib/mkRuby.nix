@@ -1,4 +1,4 @@
-{ stdenv, buildPackages, lib
+{ stdenv, lib
 , fetchurl, fetchpatch, fetchFromSavannah, fetchFromGitHub
 , zlib, gdbm, ncurses, readline, groff, libyaml, libffi, jemalloc, autoreconfHook, bison
 , autoconf, libiconv, libobjc, libunwind, Foundation
@@ -23,7 +23,7 @@ let
     # https://github.com/ruby/ruby/blob/v3_2_2/yjit.h#L21
     yjitSupported = atLeast32 && (stdenv.hostPlatform.isx86_64 || (!stdenv.hostPlatform.isWindows && stdenv.hostPlatform.isAarch64));
     self = lib.makeOverridable (
-      { stdenv, buildPackages, lib
+      { stdenv, lib
       , fetchurl, fetchpatch, fetchFromSavannah, fetchFromGitHub
       , rubygemsSupport ? true
       , zlib, zlibSupport ? true
@@ -50,11 +50,6 @@ let
       , buildEnv, bundler, bundix
       , libiconv, libobjc, libunwind, Foundation
       , makeBinaryWrapper, buildRubyGem, defaultGemConfig
-      , baseRuby ? buildPackages.ruby.override {
-          docSupport = false;
-          rubygemsSupport = false;
-        }
-      , useBaseRuby ? stdenv.hostPlatform != stdenv.buildPlatform
       }:
       stdenv.mkDerivation rec {
         pname = "ruby";
@@ -75,8 +70,7 @@ let
         nativeBuildInputs = [ autoreconfHook bison ]
           ++ (op docSupport groff)
           ++ (ops (dtraceSupport && stdenv.isLinux) [ systemtap libsystemtap ])
-          ++ ops yjitSupport [ rustPlatform.cargoSetupHook rustPlatform.rust.cargo rustPlatform.rust.rustc ]
-          ++ op useBaseRuby baseRuby;
+          ++ ops yjitSupport [ rustPlatform.cargoSetupHook rustPlatform.rust.cargo rustPlatform.rust.rustc ];
         buildInputs = [ autoconf ]
           ++ (op fiddleSupport libffi)
           ++ (ops cursesSupport [ ncurses readline ])
@@ -100,10 +94,6 @@ let
         enableParallelInstalling = false;
 
         patches = op (lib.versionOlder ver.majMin "3.1") ./patches/do-not-regenerate-revision.h.patch
-          ++ op (atLeast30 && useBaseRuby) (
-            if atLeast32 then ./do-not-update-gems-baseruby-3.2.patch
-            else ./do-not-update-gems-baseruby.patch
-          )
           ++ ops (ver.majMin == "3.0") [
             # Ruby 3.0 adds `-fdeclspec` to $CC instead of $CFLAGS. Fixed in later versions.
             (fetchpatch {
@@ -125,13 +115,6 @@ let
               url = "https://github.com/ruby/ruby/commit/261d8dd20afd26feb05f00a560abd99227269c1c.patch";
               sha256 = "0wrii25cxcz2v8bgkrf7ibcanjlxwclzhayin578bf0qydxdm9qy";
             })
-          ]
-          ++ ops atLeast31 [
-            # When using a baseruby, ruby always sets "libdir" to the build
-            # directory, which nix rejects due to a reference in to /build/ in
-            # the final product. Removing this reference doesn't seem to break
-            # anything and fixes cross compliation.
-            ./patches/dont-refer-to-build-dir.patch
           ];
 
         cargoRoot = opString yjitSupport "yjit";
@@ -162,7 +145,6 @@ let
           (lib.enableFeature (!stdenv.hostPlatform.isStatic) "shared")
           (lib.enableFeature true "pthread")
           (lib.withFeatureAs true "soname" "ruby-${version}")
-          (lib.withFeatureAs useBaseRuby "baseruby" "${baseRuby}/bin/ruby")
           (lib.enableFeature dtraceSupport "dtrace")
           (lib.enableFeature jitSupport "jit-support")
           (lib.enableFeature yjitSupport "yjit")
@@ -252,11 +234,6 @@ let
           # Add rbconfig shim so ri can find docs
           mkdir -p $devdoc/lib/ruby/site_ruby
           cp ${./rbconfig.rb} $devdoc/lib/ruby/site_ruby/rbconfig.rb
-        '' + opString useBaseRuby ''
-          # Prevent the baseruby from being included in the closure.
-          ${removeReferencesTo}/bin/remove-references-to \
-            -t ${baseRuby} \
-            $rbConfig $out/lib/libruby*
         '';
 
         installCheckPhase = ''
@@ -274,8 +251,7 @@ let
         '';
         doInstallCheck = true;
 
-        disallowedRequisites = op (!jitSupport) stdenv.cc.cc
-          ++ op useBaseRuby baseRuby;
+        disallowedRequisites = op (!jitSupport) stdenv.cc.cc;
 
         meta = with lib; {
           description = "An object-oriented language for quick and easy programming";
@@ -302,8 +278,6 @@ let
             ruby = self;
           }) withPackages buildGems gems;
 
-        } // lib.optionalAttrs useBaseRuby {
-          inherit baseRuby;
         };
       }
     ) args; in self;

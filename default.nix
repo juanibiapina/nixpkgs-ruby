@@ -20,6 +20,11 @@ in {
     sha256 = "0avj4g3s2839b2y4m6pk8kid74r8nj7k0qm2rsdcwjzhg8h7rd3h";
   };
 
+  ruby_3_1_2 = mkRuby {
+    version = mkRubyVersion "3" "1" "2" "";
+    sha256 = "0gm84ipk6mrfw94852w5h7xxk2lqrxjbnlwb88svf0lz70933131";
+  };
+
   ruby_3_1_4 = mkRuby {
     version = mkRubyVersion "3" "1" "4" "";
     sha256 = "sha256-o9VYeaDfqx1xQf3xDSKgfb+OXNxEFdob3gYSfVzDx7Y=";
