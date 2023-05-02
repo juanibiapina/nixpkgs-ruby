@@ -29,4 +29,10 @@ in {
     version = mkRubyVersion "3" "1" "4" "";
     sha256 = "sha256-o9VYeaDfqx1xQf3xDSKgfb+OXNxEFdob3gYSfVzDx7Y=";
   };
+
+  ruby_3_2_2 = mkRuby {
+    version = mkRubyVersion "3" "2" "2" "";
+    sha256 = "sha256-lsV1WIcaZ0jeW8nydOk/S1qtBs2PN776Do2U57ikI7w=";
+    cargoSha256 = "sha256-6du7RJo0DH+eYMOoh3L31F3aqfR5+iG1iKauSV1uNcQ=";
+  };
 }
