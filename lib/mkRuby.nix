@@ -18,7 +18,6 @@ let
   generic = { version, sha256, cargoSha256 ? null }: let
     ver = version;
     atLeast30 = lib.versionAtLeast ver.majMin "3.0";
-    atLeast31 = lib.versionAtLeast ver.majMin "3.1";
     atLeast32 = lib.versionAtLeast ver.majMin "3.2";
     # https://github.com/ruby/ruby/blob/v3_2_2/yjit.h#L21
     yjitSupported = atLeast32 && (stdenv.hostPlatform.isx86_64 || (!stdenv.hostPlatform.isWindows && stdenv.hostPlatform.isAarch64));
